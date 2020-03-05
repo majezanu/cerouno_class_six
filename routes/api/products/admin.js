@@ -3,12 +3,22 @@ import productsUtils from '../../../modules/products';
 import {v4 as uuidv4} from 'uuid'
 const APP = express();
 let products = [];
+let sales = [];
 APP.use(
     (req,res,next) => {
         products = APP.get('products');
+        sales = APP.get('sales');
         next();
     }
 );
+APP.get('/total', (req, res) => {
+    let total = sales.reduce((prev, current) => current.price * current.qty + prev, 0);
+    let result = {
+        sales,
+        total
+    };
+    res.send(result);
+});
 APP.get('/', (req, res) => {
     let filters = req.query;
     if(filters.id) {
